@@ -1,66 +1,101 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# simple-chat-service
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A Laravel 11 REST API for a real-time chat service with JWT authentication, chat rooms, direct messaging, and WebSocket support via Laravel Reverb.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **User Auth** — Register, login (JWT), logout, token refresh, forgot/reset password (via SMTP)
+- **Chat Rooms** — Create public or private rooms, join (password-protected for private), leave (room auto-deletes when empty), send messages
+- **WebSocket Broadcasting** — Real-time chat messages via Laravel Reverb (presence channels for rooms, private channels for DMs)
+- **Direct Messages** — Send DMs between users, view conversation history
+- **User Profile** — Update name and location
+- **Swagger UI** — Auto-generated API docs at `/api/documentation`
+- **Flexible storage** — SQLite by default; supports PostgreSQL, MySQL, or any other Laravel-supported driver
+- **Docker** — Dockerfile + docker-compose.yml with Nginx, PHP-FPM, Reverb, and Mailpit
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Quick Start (Docker)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```bash
+cp .env.example .env
+docker-compose build
+docker-compose up -d
+docker-compose exec app php artisan key:generate
+docker-compose exec app php artisan jwt:secret
+docker-compose exec app php artisan migrate --force
+```
 
-## Learning Laravel
+- API: `http://localhost:8000/api/v1`
+- Swagger UI: `http://localhost:8000/api/documentation`
+- Mailpit UI: `http://localhost:8025`
+- WebSocket: `ws://localhost:8080`
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Quick Start (Local)
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan jwt:secret
+touch database/database.sqlite
+php artisan migrate
+php artisan serve
+# In another terminal:
+php artisan reverb:start
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## API Endpoints
 
-## Laravel Sponsors
+### Auth (`/api/v1/auth`)
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/register` | Register a new user |
+| POST | `/login` | Log in, receive JWT token |
+| POST | `/logout` | Invalidate JWT (auth required) |
+| POST | `/refresh` | Refresh JWT token (auth required) |
+| GET  | `/me` | Get current user (auth required) |
+| POST | `/forgot-password` | Send password reset email |
+| POST | `/reset-password` | Reset password via token |
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Users (`/api/v1/users`)
+| Method | Path | Description |
+|--------|------|-------------|
+| PUT | `/profile` | Update name/location (auth required) |
 
-### Premium Partners
+### Chat Rooms (`/api/v1/chat-rooms`)
+| Method | Path | Description |
+|--------|------|-------------|
+| GET  | `/` | List all public rooms |
+| POST | `/` | Create a new room |
+| GET  | `/{id}` | Get room details |
+| POST | `/{id}/join` | Join a room (password required for private) |
+| POST | `/{id}/leave` | Leave a room (room deleted when empty) |
+| GET  | `/{id}/messages` | Get room messages (members only) |
+| POST | `/{id}/messages` | Send a message (members only) |
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### Direct Messages (`/api/v1/direct-messages`)
+| Method | Path | Description |
+|--------|------|-------------|
+| GET  | `/{userId}` | View conversation with a user |
+| POST | `/{userId}` | Send a DM to a user |
 
-## Contributing
+## Environment Variables
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+See `.env.example` for all supported variables.
 
-## Code of Conduct
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `DB_CONNECTION` | `sqlite` | Database driver (`sqlite`, `mysql`, `pgsql`) |
+| `JWT_SECRET` | — | JWT signing secret (set via `php artisan jwt:secret`) |
+| `JWT_TTL` | `60` | Token lifetime in minutes |
+| `MAIL_MAILER` | `smtp` | Mailer driver |
+| `BROADCAST_CONNECTION` | `reverb` | Broadcasting driver |
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Running Tests
 
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+php artisan test
+```
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT
