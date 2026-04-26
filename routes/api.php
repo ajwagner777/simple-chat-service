@@ -25,7 +25,9 @@ Route::prefix('v1')->group(function () {
             Route::post('refresh', [AuthController::class, 'refresh']);
         });
 
-        // User profile
+        // Users
+        Route::get('users', [UserController::class, 'index']);
+        Route::get('users/{user}', [UserController::class, 'show']);
         Route::put('users/profile', [UserController::class, 'updateProfile']);
 
         // Chat rooms

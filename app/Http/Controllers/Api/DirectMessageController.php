@@ -18,8 +18,33 @@ class DirectMessageController extends Controller
      *     tags={"Direct Messages"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="userId", in="path", required=true, @OA\Schema(type="integer")),
-     *     @OA\Response(response=200, description="Paginated conversation messages"),
-     *     @OA\Response(response=404, description="User not found")
+     *     @OA\Response(response=200, description="Paginated conversation messages",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="array",
+     *                 @OA\Items(type="object",
+     *                     @OA\Property(property="id", type="integer", example=1),
+     *                     @OA\Property(property="message", type="string", example="Hey there!"),
+     *                     @OA\Property(property="sender", type="object",
+     *                         @OA\Property(property="id", type="integer", example=1),
+     *                         @OA\Property(property="name", type="string", example="John Doe")
+     *                     ),
+     *                     @OA\Property(property="recipient", type="object",
+     *                         @OA\Property(property="id", type="integer", example=2),
+     *                         @OA\Property(property="name", type="string", example="Jane Smith")
+     *                     ),
+     *                     @OA\Property(property="created_at", type="string", format="date-time", example="2026-04-25T12:00:00Z")
+     *                 )
+     *             ),
+     *             @OA\Property(property="current_page", type="integer", example=1),
+     *             @OA\Property(property="total", type="integer", example=25),
+     *             @OA\Property(property="per_page", type="integer", example=50)
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="User not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="No query results for model [App\\Models\\User] 99")
+     *         )
+     *     )
      * )
      */
     public function conversation(User $user)
@@ -50,9 +75,31 @@ class DirectMessageController extends Controller
      *             @OA\Property(property="message", type="string", example="Hey there!")
      *         )
      *     ),
-     *     @OA\Response(response=201, description="Message sent"),
-     *     @OA\Response(response=404, description="User not found"),
-     *     @OA\Response(response=422, description="Cannot message yourself")
+     *     @OA\Response(response=201, description="Message sent",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="id", type="integer", example=1),
+     *             @OA\Property(property="message", type="string", example="Hey there!"),
+     *             @OA\Property(property="sender", type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="John Doe")
+     *             ),
+     *             @OA\Property(property="recipient", type="object",
+     *                 @OA\Property(property="id", type="integer", example=2),
+     *                 @OA\Property(property="name", type="string", example="Jane Smith")
+     *             ),
+     *             @OA\Property(property="created_at", type="string", format="date-time", example="2026-04-25T12:00:00Z")
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="User not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="No query results for model [App\\Models\\User] 99")
+     *         )
+     *     ),
+     *     @OA\Response(response=422, description="Cannot message yourself",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Cannot send a direct message to yourself.")
+     *         )
+     *     )
      * )
      */
     public function send(Request $request, User $user)

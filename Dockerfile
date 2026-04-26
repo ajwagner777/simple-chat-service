@@ -30,6 +30,9 @@ RUN mkdir -p /var/www/database \
     && touch /var/www/database/database.sqlite \
     && chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache /var/www/database
 
+# Create supervisor log directory
+RUN mkdir -p /var/log/supervisor
+
 # Copy configs
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf

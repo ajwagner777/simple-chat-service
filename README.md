@@ -24,6 +24,12 @@ docker-compose exec app php artisan jwt:secret
 docker-compose exec app php artisan migrate --force
 ```
 
+For live file watching and automatic sync/rebuild while developing in Docker:
+
+```bash
+docker compose watch
+```
+
 - API: `http://localhost:8000/api/v1`
 - Swagger UI: `http://localhost:8000/api/documentation`
 - Mailpit UI: `http://localhost:8025`

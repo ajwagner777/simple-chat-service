@@ -39,8 +39,30 @@ class AuthController extends Controller
      *             @OA\Property(property="password_confirmation", type="string", format="password", example="secret123")
      *         )
      *     ),
-     *     @OA\Response(response=201, description="User registered successfully"),
-     *     @OA\Response(response=422, description="Validation error")
+     *     @OA\Response(response=201, description="User registered successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="User registered successfully."),
+     *             @OA\Property(property="user", type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="John Doe"),
+     *                 @OA\Property(property="email", type="string", example="john@example.com"),
+     *                 @OA\Property(property="created_at", type="string", format="date-time", example="2026-04-25T12:00:00Z")
+     *             ),
+     *             @OA\Property(property="token", type="string", example="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."),
+     *             @OA\Property(property="token_type", type="string", example="bearer"),
+     *             @OA\Property(property="expires_in", type="integer", example=3600)
+     *         )
+     *     ),
+     *     @OA\Response(response=422, description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="The email has already been taken."),
+     *             @OA\Property(property="errors", type="object",
+     *                 @OA\Property(property="email", type="array",
+     *                     @OA\Items(type="string", example="The email has already been taken.")
+     *                 )
+     *             )
+     *         )
+     *     )
      * )
      */
     public function register(Request $request)
@@ -80,8 +102,18 @@ class AuthController extends Controller
      *             @OA\Property(property="password", type="string", format="password", example="secret123")
      *         )
      *     ),
-     *     @OA\Response(response=200, description="Login successful, returns JWT token"),
-     *     @OA\Response(response=401, description="Invalid credentials")
+     *     @OA\Response(response=200, description="Login successful, returns JWT token",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="token", type="string", example="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."),
+     *             @OA\Property(property="token_type", type="string", example="bearer"),
+     *             @OA\Property(property="expires_in", type="integer", example=3600)
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Invalid credentials",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Invalid credentials.")
+     *         )
+     *     )
      * )
      */
     public function login(Request $request)
@@ -104,8 +136,16 @@ class AuthController extends Controller
      *     summary="Log out (invalidate JWT token)",
      *     tags={"Auth"},
      *     security={{"bearerAuth":{}}},
-     *     @OA\Response(response=200, description="Logged out successfully"),
-     *     @OA\Response(response=401, description="Unauthenticated")
+     *     @OA\Response(response=200, description="Logged out successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Logged out successfully.")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
+     *     )
      * )
      */
     public function logout()
@@ -120,8 +160,18 @@ class AuthController extends Controller
      *     summary="Refresh JWT token",
      *     tags={"Auth"},
      *     security={{"bearerAuth":{}}},
-     *     @OA\Response(response=200, description="Token refreshed"),
-     *     @OA\Response(response=401, description="Unauthenticated")
+     *     @OA\Response(response=200, description="Token refreshed",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="token", type="string", example="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."),
+     *             @OA\Property(property="token_type", type="string", example="bearer"),
+     *             @OA\Property(property="expires_in", type="integer", example=3600)
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
+     *     )
      * )
      */
     public function refresh()
@@ -135,8 +185,20 @@ class AuthController extends Controller
      *     summary="Get authenticated user",
      *     tags={"Auth"},
      *     security={{"bearerAuth":{}}},
-     *     @OA\Response(response=200, description="Authenticated user data"),
-     *     @OA\Response(response=401, description="Unauthenticated")
+     *     @OA\Response(response=200, description="Authenticated user data",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="id", type="integer", example=1),
+     *             @OA\Property(property="name", type="string", example="John Doe"),
+     *             @OA\Property(property="email", type="string", example="john@example.com"),
+     *             @OA\Property(property="location", type="string", example="New York, NY"),
+     *             @OA\Property(property="created_at", type="string", format="date-time", example="2026-04-25T12:00:00Z")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
+     *     )
      * )
      */
     public function me()
@@ -154,8 +216,16 @@ class AuthController extends Controller
      *             @OA\Property(property="email", type="string", format="email", example="john@example.com")
      *         )
      *     ),
-     *     @OA\Response(response=200, description="Password reset link sent"),
-     *     @OA\Response(response=422, description="Email not found or validation error")
+     *     @OA\Response(response=200, description="Password reset link sent",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="We have emailed your password reset link.")
+     *         )
+     *     ),
+     *     @OA\Response(response=422, description="Email not found or validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="We can't find a user with that email address.")
+     *         )
+     *     )
      * )
      */
     public function forgotPassword(Request $request)
@@ -177,14 +247,22 @@ class AuthController extends Controller
      *     tags={"Auth"},
      *     @OA\RequestBody(required=true,
      *         @OA\JsonContent(required={"token","email","password","password_confirmation"},
-     *             @OA\Property(property="token", type="string"),
-     *             @OA\Property(property="email", type="string", format="email"),
-     *             @OA\Property(property="password", type="string", format="password", minLength=8),
-     *             @OA\Property(property="password_confirmation", type="string", format="password")
+     *             @OA\Property(property="token", type="string", example="a1b2c3d4e5f6..."),
+     *             @OA\Property(property="email", type="string", format="email", example="john@example.com"),
+     *             @OA\Property(property="password", type="string", format="password", minLength=8, example="newpassword123"),
+     *             @OA\Property(property="password_confirmation", type="string", format="password", example="newpassword123")
      *         )
      *     ),
-     *     @OA\Response(response=200, description="Password reset successfully"),
-     *     @OA\Response(response=422, description="Invalid token or validation error")
+     *     @OA\Response(response=200, description="Password reset successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Your password has been reset.")
+     *         )
+     *     ),
+     *     @OA\Response(response=422, description="Invalid token or validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="This password reset token is invalid.")
+     *         )
+     *     )
      * )
      */
     public function resetPassword(Request $request)
