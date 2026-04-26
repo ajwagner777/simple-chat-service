@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ChatOverviewController;
 use App\Http\Controllers\Api\ChatRoomController;
 use App\Http\Controllers\Api\DirectMessageController;
 use App\Http\Controllers\Api\UserController;
@@ -40,6 +41,7 @@ Route::prefix('v1')->group(function () {
         Route::post('chat-rooms/{chatRoom}/messages', [ChatRoomController::class, 'sendMessage']);
 
         // Direct messages
+        Route::get('chats/overview', [ChatOverviewController::class, 'index']);
         Route::get('direct-messages/{user}', [DirectMessageController::class, 'conversation']);
         Route::post('direct-messages/{user}', [DirectMessageController::class, 'send']);
     });
