@@ -142,9 +142,9 @@ class AuthController extends Controller
      *             @OA\Property(property="message", type="string", example="Logged out successfully.")
      *         )
      *     ),
-     *     @OA\Response(response=401, description="Unauthenticated",
+        *     @OA\Response(response=401, description="Unauthenticated",
      *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+        *             @OA\Property(property="message", type="string", example="Unauthenticated.")
      *         )
      *     )
      * )
@@ -168,23 +168,23 @@ class AuthController extends Controller
      *     path="/auth/refresh",
      *     summary="Refresh JWT token",
      *     tags={"Auth"},
-    *     @OA\RequestBody(required=true,
-    *         @OA\JsonContent(required={"refresh_token"},
-    *             @OA\Property(property="refresh_token", type="string", example="b8b3098d2b214b68b303d0cf84244d1f0b3ef8d40fd0458d914f8f49493c2fa7")
-    *         )
-    *     ),
+        *     @OA\RequestBody(required=true,
+        *         @OA\JsonContent(required={"refresh_token"},
+        *             @OA\Property(property="refresh_token", type="string", example="b8b3098d2b214b68b303d0cf84244d1f0b3ef8d40fd0458d914f8f49493c2fa7")
+        *         )
+        *     ),
      *     @OA\Response(response=200, description="Token refreshed",
      *         @OA\JsonContent(
      *             @OA\Property(property="token", type="string", example="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."),
-    *             @OA\Property(property="refresh_token", type="string", example="16f7144a565248fb82f00a4c77112d4a89fc40277b8a4973b0ab0c552b5f0e0f"),
+        *             @OA\Property(property="refresh_token", type="string", example="16f7144a565248fb82f00a4c77112d4a89fc40277b8a4973b0ab0c552b5f0e0f"),
      *             @OA\Property(property="token_type", type="string", example="bearer"),
-    *             @OA\Property(property="expires_in", type="integer", example=3600),
-    *             @OA\Property(property="refresh_token_expires_in", type="integer", example=2592000)
+        *             @OA\Property(property="expires_in", type="integer", example=3600),
+        *             @OA\Property(property="refresh_token_expires_in", type="integer", example=2592000)
      *         )
      *     ),
-     *     @OA\Response(response=401, description="Unauthenticated",
+        *     @OA\Response(response=401, description="Invalid or expired refresh token",
      *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+        *             @OA\Property(property="message", type="string", example="Invalid refresh token.")
      *         )
      *     )
      * )

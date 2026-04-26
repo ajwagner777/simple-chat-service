@@ -97,6 +97,10 @@
                                             "type": "string",
                                             "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
                                         },
+                                        "refresh_token": {
+                                            "type": "string",
+                                            "example": "b8b3098d2b214b68b303d0cf84244d1f0b3ef8d40fd0458d914f8f49493c2fa7"
+                                        },
                                         "token_type": {
                                             "type": "string",
                                             "example": "bearer"
@@ -104,6 +108,10 @@
                                         "expires_in": {
                                             "type": "integer",
                                             "example": 3600
+                                        },
+                                        "refresh_token_expires_in": {
+                                            "type": "integer",
+                                            "example": 2592000
                                         }
                                     },
                                     "type": "object"
@@ -186,6 +194,10 @@
                                             "type": "string",
                                             "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
                                         },
+                                        "refresh_token": {
+                                            "type": "string",
+                                            "example": "b8b3098d2b214b68b303d0cf84244d1f0b3ef8d40fd0458d914f8f49493c2fa7"
+                                        },
                                         "token_type": {
                                             "type": "string",
                                             "example": "bearer"
@@ -193,6 +205,10 @@
                                         "expires_in": {
                                             "type": "integer",
                                             "example": 3600
+                                        },
+                                        "refresh_token_expires_in": {
+                                            "type": "integer",
+                                            "example": 2592000
                                         }
                                     },
                                     "type": "object"
@@ -274,6 +290,25 @@
                 ],
                 "summary": "Refresh JWT token",
                 "operationId": "e7ab7446393758bb71fd1946a349e500",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "refresh_token"
+                                ],
+                                "properties": {
+                                    "refresh_token": {
+                                        "type": "string",
+                                        "example": "b8b3098d2b214b68b303d0cf84244d1f0b3ef8d40fd0458d914f8f49493c2fa7"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "Token refreshed",
@@ -285,6 +320,10 @@
                                             "type": "string",
                                             "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
                                         },
+                                        "refresh_token": {
+                                            "type": "string",
+                                            "example": "16f7144a565248fb82f00a4c77112d4a89fc40277b8a4973b0ab0c552b5f0e0f"
+                                        },
                                         "token_type": {
                                             "type": "string",
                                             "example": "bearer"
@@ -292,6 +331,10 @@
                                         "expires_in": {
                                             "type": "integer",
                                             "example": 3600
+                                        },
+                                        "refresh_token_expires_in": {
+                                            "type": "integer",
+                                            "example": 2592000
                                         }
                                     },
                                     "type": "object"
@@ -300,14 +343,14 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthenticated",
+                        "description": "Invalid or expired refresh token",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthenticated."
+                                            "example": "Invalid refresh token."
                                         }
                                     },
                                     "type": "object"
@@ -315,12 +358,7 @@
                             }
                         }
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             }
         },
         "/auth/me": {

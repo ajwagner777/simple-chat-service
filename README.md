@@ -4,7 +4,7 @@ A Laravel 11 REST API for a real-time chat service with JWT authentication, chat
 
 ## Features
 
-- **User Auth** — Register, login (JWT), logout, token refresh, forgot/reset password (via SMTP)
+- **User Auth** — Register/login with access + refresh tokens, refresh-token rotation, logout, forgot/reset password (via SMTP)
 - **Chat Rooms** — Create public or private rooms, join (password-protected for private), leave (room auto-deletes when empty), send messages
 - **WebSocket Broadcasting** — Real-time chat messages via Laravel Reverb (presence channels for rooms, private channels for DMs)
 - **Direct Messages** — Send DMs between users, view conversation history
@@ -54,13 +54,21 @@ php artisan reverb:start
 ### Auth (`/api/v1/auth`)
 | Method | Path | Description |
 |--------|------|-------------|
-| POST | `/register` | Register a new user |
-| POST | `/login` | Log in, receive JWT token |
+| POST | `/register` | Register a new user, returns access + refresh tokens |
+| POST | `/login` | Log in, returns access + refresh tokens |
 | POST | `/logout` | Invalidate JWT (auth required) |
-| POST | `/refresh` | Refresh JWT token (auth required) |
+| POST | `/refresh` | Rotate refresh token and issue new access token |
 | GET  | `/me` | Get current user (auth required) |
 | POST | `/forgot-password` | Send password reset email |
 | POST | `/reset-password` | Reset password via token |
+
+### Token Lifecycle
+
+- `register` and `login` return `token` (JWT access token) and `refresh_token`.
+- Access token expiry is returned in `expires_in` (seconds).
+- Refresh token expiry is returned in `refresh_token_expires_in` (seconds).
+- `POST /api/v1/auth/refresh` accepts `{ "refresh_token": "..." }`, revokes the old refresh token, and returns a new access + refresh pair.
+- `POST /api/v1/auth/logout` revokes active refresh tokens for the authenticated user and invalidates the current access token.
 
 ### Users (`/api/v1/users`)
 | Method | Path | Description |
@@ -93,6 +101,7 @@ See `.env.example` for all supported variables.
 | `DB_CONNECTION` | `sqlite` | Database driver (`sqlite`, `mysql`, `pgsql`) |
 | `JWT_SECRET` | — | JWT signing secret (set via `php artisan jwt:secret`) |
 | `JWT_TTL` | `60` | Token lifetime in minutes |
+| `AUTH_REFRESH_TOKEN_TTL` | `43200` | Refresh token lifetime in minutes (30 days) |
 | `MAIL_MAILER` | `smtp` | Mailer driver |
 | `BROADCAST_CONNECTION` | `reverb` | Broadcasting driver |
 
