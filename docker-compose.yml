@@ -1,0 +1,29 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+      - "8080:8080"
+    volumes:
+      - ./storage:/var/www/storage
+      - ./database:/var/www/database
+    env_file:
+      - .env
+    depends_on:
+      - mailpit
+    networks:
+      - chat-network
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - chat-network
+
+networks:
+  chat-network:
+    driver: bridge
