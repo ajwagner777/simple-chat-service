@@ -116,4 +116,8 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    'refresh_tokens' => [
+        'ttl' => env('AUTH_REFRESH_TOKEN_TTL', 60 * 24 * 30),
+    ],
+
 ];
