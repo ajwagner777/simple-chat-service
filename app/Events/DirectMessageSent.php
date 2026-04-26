@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use App\Models\DirectMessage;
+use App\Models\Message;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -13,7 +13,7 @@ class DirectMessageSent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public function __construct(public DirectMessage $dm) {}
+    public function __construct(public Message $dm) {}
 
     public function broadcastOn(): array
     {

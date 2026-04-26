@@ -49,11 +49,11 @@ class User extends Authenticatable implements JWTSubject
 
     public function sentDirectMessages()
     {
-        return $this->hasMany(DirectMessage::class, 'sender_id');
+        return $this->hasMany(Message::class)->whereNull('chat_room_id');
     }
 
     public function receivedDirectMessages()
     {
-        return $this->hasMany(DirectMessage::class, 'recipient_id');
+        return $this->hasMany(Message::class, 'recipient_id')->whereNull('chat_room_id');
     }
 }

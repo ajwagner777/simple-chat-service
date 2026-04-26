@@ -21,8 +21,8 @@ class DirectMessageTest extends TestCase
         ]);
 
         $response->assertStatus(201)->assertJsonFragment(['message' => 'Hey there!']);
-        $this->assertDatabaseHas('direct_messages', [
-            'sender_id'    => $sender->id,
+        $this->assertDatabaseHas('messages', [
+            'user_id'      => $sender->id,
             'recipient_id' => $recipient->id,
             'message'      => 'Hey there!',
         ]);

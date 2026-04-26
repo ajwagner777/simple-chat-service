@@ -96,6 +96,75 @@ See `.env.example` for all supported variables.
 | `MAIL_MAILER` | `smtp` | Mailer driver |
 | `BROADCAST_CONNECTION` | `reverb` | Broadcasting driver |
 
+## WebSockets
+
+Laravel Reverb handles real-time broadcasting over WebSockets. The server listens on port `8080` by default.
+
+### Channels
+
+| Channel | Type | Description |
+|---------|------|-------------|
+| `presence-chat-room.{roomId}` | Presence | Broadcasts chat messages to all members of a room |
+| `private-direct-message.{userId}` | Private | Broadcasts DMs to the recipient |
+
+### Events
+
+| Event | Channel | Payload |
+|-------|---------|---------|
+| `message.sent` | `presence-chat-room.{roomId}` | New chat room message |
+| `message.sent` | `private-direct-message.{userId}` | New direct message |
+
+### Connecting (Laravel Echo + Pusher JS)
+
+Install the client library:
+
+```bash
+npm install laravel-echo pusher-js
+```
+
+Configure Echo:
+
+```js
+import Echo from 'laravel-echo';
+import Pusher from 'pusher-js';
+
+window.Pusher = Pusher;
+
+const echo = new Echo({
+    broadcaster: 'reverb',
+    key: import.meta.env.VITE_REVERB_APP_KEY,
+    wsHost: import.meta.env.VITE_REVERB_HOST ?? 'localhost',
+    wsPort: import.meta.env.VITE_REVERB_PORT ?? 8080,
+    forceTLS: false,
+    enabledTransports: ['ws'],
+    authEndpoint: '/broadcasting/auth',
+    auth: {
+        headers: {
+            Authorization: `Bearer ${yourJwtToken}`,
+        },
+    },
+});
+```
+
+### Listening to a Chat Room
+
+```js
+echo.join(`chat-room.${roomId}`)
+    .here(members => console.log('Online members:', members))
+    .joining(member => console.log('Joined:', member))
+    .leaving(member => console.log('Left:', member))
+    .listen('.message.sent', e => console.log('New message:', e));
+```
+
+### Listening to Direct Messages
+
+```js
+echo.private(`direct-message.${yourUserId}`)
+    .listen('.message.sent', e => console.log('New DM:', e));
+```
+
+> **Note:** Both channels require authentication. Include your JWT token in the `Authorization` header of the `/broadcasting/auth` request (see Echo `auth` config above).
+
 ## Running Tests
 
 ```bash

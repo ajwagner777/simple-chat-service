@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use App\Models\ChatMessage;
+use App\Models\Message;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -13,7 +13,7 @@ class ChatMessageSent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public function __construct(public ChatMessage $message) {}
+    public function __construct(public Message $message) {}
 
     public function broadcastOn(): array
     {

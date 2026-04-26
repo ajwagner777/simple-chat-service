@@ -1189,7 +1189,7 @@
                                                         "type": "string",
                                                         "example": "Hey there!"
                                                     },
-                                                    "sender": {
+                                                    "user": {
                                                         "properties": {
                                                             "id": {
                                                                 "type": "integer",
@@ -1315,7 +1315,7 @@
                                             "type": "string",
                                             "example": "Hey there!"
                                         },
-                                        "sender": {
+                                        "user": {
                                             "properties": {
                                                 "id": {
                                                     "type": "integer",

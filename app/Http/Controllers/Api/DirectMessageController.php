@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Events\DirectMessageSent;
 use App\Http\Controllers\Controller;
-use App\Models\DirectMessage;
+use App\Models\Message;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,7 +24,7 @@ class DirectMessageController extends Controller
      *                 @OA\Items(type="object",
      *                     @OA\Property(property="id", type="integer", example=1),
      *                     @OA\Property(property="message", type="string", example="Hey there!"),
-     *                     @OA\Property(property="sender", type="object",
+     *                     @OA\Property(property="user", type="object",
      *                         @OA\Property(property="id", type="integer", example=1),
      *                         @OA\Property(property="name", type="string", example="John Doe")
      *                     ),
@@ -51,18 +51,13 @@ class DirectMessageController extends Controller
     {
         $authId = Auth::id();
 
-        $messages = DirectMessage::where(function ($q) use ($authId, $user) {
-            $q->where('sender_id', $authId)->where('recipient_id', $user->id);
-        })->orWhere(function ($q) use ($authId, $user) {
-            $q->where('sender_id', $user->id)->where('recipient_id', $authId);
-        })
-          ->with(['sender:id,name', 'recipient:id,name'])
-          ->orderBy('created_at')
-          ->paginate(50);
+        $messages = Message::forConversation($authId, $user->id)
+            ->with(['user:id,name', 'recipient:id,name'])
+            ->orderBy('created_at')
+            ->paginate(50);
 
         return response()->json($messages);
     }
-
     /**
      * @OA\Post(
      *     path="/direct-messages/{userId}",
@@ -79,7 +74,7 @@ class DirectMessageController extends Controller
      *         @OA\JsonContent(
      *             @OA\Property(property="id", type="integer", example=1),
      *             @OA\Property(property="message", type="string", example="Hey there!"),
-     *             @OA\Property(property="sender", type="object",
+     *             @OA\Property(property="user", type="object",
      *                 @OA\Property(property="id", type="integer", example=1),
      *                 @OA\Property(property="name", type="string", example="John Doe")
      *             ),
@@ -110,13 +105,13 @@ class DirectMessageController extends Controller
 
         $data = $request->validate(['message' => 'required|string|max:5000']);
 
-        $dm = DirectMessage::create([
-            'sender_id'    => Auth::id(),
+        $dm = Message::create([
+            'user_id'      => Auth::id(),
             'recipient_id' => $user->id,
             'message'      => $data['message'],
         ]);
 
-        $dm->load(['sender:id,name', 'recipient:id,name']);
+        $dm->load(['user:id,name', 'recipient:id,name']);
 
         broadcast(new DirectMessageSent($dm))->toOthers();
 

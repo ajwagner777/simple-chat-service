@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Events\ChatMessageSent;
 use App\Http\Controllers\Controller;
-use App\Models\ChatMessage;
+use App\Models\Message;
 use App\Models\ChatRoom;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -312,7 +312,7 @@ class ChatRoomController extends Controller
 
         $data = $request->validate(['message' => 'required|string|max:5000']);
 
-        $message = ChatMessage::create([
+        $message = Message::create([
             'chat_room_id' => $chatRoom->id,
             'user_id'      => $user->id,
             'message'      => $data['message'],
