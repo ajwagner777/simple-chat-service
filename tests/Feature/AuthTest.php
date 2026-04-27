@@ -27,6 +27,21 @@ class AuthTest extends TestCase
         $this->assertDatabaseCount('refresh_tokens', 1);
     }
 
+    public function test_register_normalizes_email_to_lowercase(): void
+    {
+        $response = $this->postJson('/api/v1/auth/register', [
+            'name'                  => 'Case User',
+            'email'                 => 'Case.Sensitive@Example.COM',
+            'password'              => 'password123',
+            'password_confirmation' => 'password123',
+        ]);
+
+        $response->assertStatus(201)
+            ->assertJsonPath('user.email', 'case.sensitive@example.com');
+
+        $this->assertDatabaseHas('users', ['email' => 'case.sensitive@example.com']);
+    }
+
     public function test_user_can_login(): void
     {
         $user = User::factory()->create([
@@ -43,6 +58,22 @@ class AuthTest extends TestCase
             ->assertJsonStructure(['token', 'refresh_token', 'token_type', 'expires_in', 'refresh_token_expires_in']);
 
         $this->assertDatabaseCount('refresh_tokens', 1);
+    }
+
+    public function test_user_can_login_with_case_insensitive_email(): void
+    {
+        User::factory()->create([
+            'email'    => 'lowercase@example.com',
+            'password' => bcrypt('password123'),
+        ]);
+
+        $response = $this->postJson('/api/v1/auth/login', [
+            'email'    => 'LOWERCASE@EXAMPLE.COM',
+            'password' => 'password123',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJsonStructure(['token', 'refresh_token', 'token_type', 'expires_in', 'refresh_token_expires_in']);
     }
 
     public function test_login_fails_with_wrong_credentials(): void
