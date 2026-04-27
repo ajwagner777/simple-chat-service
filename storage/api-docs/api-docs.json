@@ -570,6 +570,143 @@
                 }
             }
         },
+        "/chats/overview": {
+            "get": {
+                "tags": [
+                    "Chats"
+                ],
+                "summary": "Get authenticated user's chat rooms and active direct message threads",
+                "operationId": "07f00c7b256f71093f827a2fff7653fd",
+                "responses": {
+                    "200": {
+                        "description": "Chat overview",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "chat_rooms": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "General"
+                                                    },
+                                                    "description": {
+                                                        "type": "string",
+                                                        "example": "General discussion"
+                                                    },
+                                                    "is_private": {
+                                                        "type": "boolean",
+                                                        "example": false
+                                                    },
+                                                    "owner": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "John Doe"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "users_count": {
+                                                        "type": "integer",
+                                                        "example": 5
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "active_direct_messages": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "participant": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 2
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "Jane Doe"
+                                                            },
+                                                            "location": {
+                                                                "type": "string",
+                                                                "example": "New York, NY",
+                                                                "nullable": true
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "last_message": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 12
+                                                            },
+                                                            "user_id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "recipient_id": {
+                                                                "type": "integer",
+                                                                "example": 2
+                                                            },
+                                                            "message": {
+                                                                "type": "string",
+                                                                "example": "Hey there!"
+                                                            },
+                                                            "created_at": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "example": "2026-04-26T12:00:00Z"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/chat-rooms": {
             "get": {
                 "tags": [
@@ -1678,6 +1815,10 @@
         {
             "name": "Auth",
             "description": "Auth"
+        },
+        {
+            "name": "Chats",
+            "description": "Chats"
         },
         {
             "name": "Chat Rooms",
